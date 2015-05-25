@@ -1,2 +1,2 @@
 #CAL_BookDiscover
-Guided project of a MIEIC course
+Project of a MIEIC course
