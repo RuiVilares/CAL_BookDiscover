@@ -1,2 +1,2 @@
-#LPOO_MAZE
+#CAL_BookDiscover
 Guided project of a MIEIC course
