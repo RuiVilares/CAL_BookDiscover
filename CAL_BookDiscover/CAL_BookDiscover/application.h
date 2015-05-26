@@ -22,19 +22,19 @@ private:
 	vector<Book> books;
 
 public:
-	
+
 	/**
 	* @brief Interface used on application
 	*/
 	static Interface *iface;
-	
+
 	/**
 	* @brief Application constructor
 	*/
 	Application();
 
 	/**
-	* @brief Top Menu configuration 
+	* @brief Top Menu configuration
 	*
 	* @param name Top Menu name
 	*/
@@ -56,15 +56,20 @@ public:
 
 	void showBooks();
 
+	void play();
+
 	void saveBooks();
 
 	void loadBooks();
 
 	int editDistance(string pattern, string word);
 
-	float numApproximateStringMatching(string bookName, string toSearch);
+	int numApproximateStringMatching(string bookName, string toSearch, int &numWords);
 
-	void calculateGuess(vector<string> &clues);
+	vector<pair<int, Book>> calculateGuess(vector<vector<string>> &combinations);
+
+	vector<vector<string>> calCombinations(const vector<string> &clues);
 };
 
 /** @} */
+

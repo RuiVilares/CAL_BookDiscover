@@ -50,8 +50,7 @@ void Application::main()
 			showBooks();
 		}
 		else if (command == 'd') {
-			vector<string> guesses = { "cidade", "serra", "praia" };
-			calculateGuess(guesses);
+			play();
 		}
 		else if (command == 'q'){
 			saveBooks();
@@ -108,6 +107,30 @@ void Application::showBooks(){
 	iface->getInput();
 }
 
+void Application::play(){
+	//while (1){
+		TopMenu("PLAY");
+		string line, word;
+		iface->drawString("Introduzir palavras base(singular, masculino, verbo no infinitivo) separadas por espaco.\nUma pista pode incluir, no maximo, uma palavra inexistente no titulo da obra.\n\n");
+		iface->drawString("Palavras: ");
+		iface->readLine(line);
+		iface->drawString("\n\n");
+		vector<string> guesses;
+		stringstream s1(line);
+		while (!s1.eof()) {
+			s1 >> word;
+			guesses.push_back(word);
+		}
+		vector<pair<int, Book>> res = calculateGuess(calCombinations(guesses));
+		iface->drawHeader("Title", "Author", "Year");
+		iface->drawString("-----------------------------------------------------------------------------\n");
+		for (unsigned int i = 0; i < res.size(); i++){
+			iface->drawTable(res[i].second);
+		}
+		iface->getInput();
+	//}
+}
+
 void Application::saveBooks(){
 	string file;
 	ofstream myfile;
@@ -146,6 +169,8 @@ void Application::loadBooks(){
 }
 
 int Application::editDistance(string pattern, string word){
+	transform(pattern.begin(), pattern.end(), pattern.begin(), toupper);
+	transform(word.begin(), word.end(), word.begin(), toupper);
 	int n = word.length();
 	vector<int> d(n + 1);
 	int old, neww;
@@ -169,38 +194,94 @@ int Application::editDistance(string pattern, string word){
 	return d[n];
 }
 
-float Application::numApproximateStringMatching(string bookName, string toSearch)
+int Application::numApproximateStringMatching(string bookName, string toSearch, int &numWords)
 {
 	string line1, word1;
-	int num = 0, nwords = 0;
+	int num = 0;
+
+	int min = 20;
+	string minStr;
+	string minSearchStr;
 
 	stringstream s1(bookName);
 	while (!s1.eof()) {
 		s1 >> word1;
-		num  = editDistance(toSearch, word1);
-		if (editDistance(toSearch, word1) < 4){
-			return num;
+		numWords++;
+		num = editDistance(toSearch, word1);
+		if (num < min){
+			min = num;
+			minStr = word1;
+			minSearchStr = toSearch;
 		}
 	}
-	return INT_MAX;
+	//cout << "\t" << minStr << "\t" << minSearchStr << "\t" << min << "\n";
+	return min;
 }
 
-void Application::calculateGuess(vector<string> &clues){
-	float total = 0;
-	float temp;
+bool pairCompare(pair<int, Book> firstElem, pair<int, Book> secondElem) {
+	return firstElem.first < secondElem.first;
+}
+
+vector<pair<int,Book>> Application::calculateGuess(vector<vector<string>> &combinations){
+	vector<pair<int, Book>> res;
+	int total;
+	int min;
+	int numWords;
 	for (int i = 0; i < books.size(); i++){
-		for (size_t j = 0; j < clues.size(); j++)
+		for (size_t j = 0; j < combinations.size(); j++)
 		{
-			temp = numApproximateStringMatching(books[i].getName(), clues[j]);
-			if (temp < 5){
-				total += temp;
+			total = 0;
+			min = 200;
+			for (size_t k = 0; k < combinations[j].size(); k++)
+			{
+				numWords = 0;
+				total += numApproximateStringMatching(books[i].getName(), combinations[j][k], numWords);
+				if (numWords < combinations[0].size() - 1)
+					total += 100;
 			}
-			else{
-				total +=  100;
-			}
+			if (total < min)
+				min = total;
 		}
-		cout << books[i].getName() << "  " << total << endl;
+		res.push_back(pair<int,Book>(min, books[i]));
 		total = 0;
 	}
-	iface->getInput();
+	sort(res.begin(), res.end(), pairCompare);
+	int numOptions = 3;
+	//while (res[numOptions].first == res[numOptions + 1].first - 1 && numOptions <= res.size() - 1);
+	//{
+	//	numOptions++;
+	//}
+	res.erase(res.begin() + numOptions, res.end());
+	for (int i = 0; i < res.size(); i++)
+	{
+		cout << res[i].first << "\t" << res[i].second.getName() << endl;
+	}
+	return res;
+}
+
+
+// http://stackoverflow.com/questions/9430568/generating-combinations-in-c
+
+vector<vector<string>> Application::calCombinations(const vector<string> &clues){
+	int n = clues.size();
+	int r = clues.size() - 1;
+
+	vector<vector<string>> res;
+	res.push_back(clues);
+
+	if (n > 1){
+		vector<bool> v(n);
+		fill(v.begin() + n - r, v.end(), true);
+
+		do {
+			vector<string> aux;
+			for (int i = 0; i < n; ++i) {
+				if (v[i]) {
+					aux.push_back(clues[i]);
+				}
+			}
+			res.push_back(aux);
+		} while (next_permutation(v.begin(), v.end()));
+	}
+	return res;
 }
