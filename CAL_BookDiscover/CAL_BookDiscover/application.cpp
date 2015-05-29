@@ -108,13 +108,14 @@ void Application::showBooks(){
 }
 
 void Application::play(){
-	//while (1){
+	while (1){
 		TopMenu("PLAY");
 		string line, word;
-		iface->drawString("Introduzir palavras base(singular, masculino, verbo no infinitivo) separadas por espaco.\nUma pista pode incluir, no maximo, uma palavra inexistente no titulo da obra.\n\n");
-		iface->drawString("Palavras: ");
+		int score = 0;
+		char cmd;
+		iface->drawString("Entering words base (singular, male, infinitive) separated by commas.\nA clue may include, at most, a word missing in the book's title.\n\n");
+		iface->drawString("Clue: ");
 		iface->readLine(line);
-		iface->drawString("\n\n");
 		vector<string> guesses;
 		stringstream s1(line);
 		while (!s1.eof()) {
@@ -122,13 +123,27 @@ void Application::play(){
 			guesses.push_back(word);
 		}
 		vector<pair<int, Book>> res = calculateGuess(calCombinations(guesses));
-		iface->drawHeader("Title", "Author", "Year");
-		iface->drawString("-----------------------------------------------------------------------------\n");
 		for (unsigned int i = 0; i < res.size(); i++){
+			iface->drawString("\n\n");
+			iface->drawHeader("Title", "Author", "Year");
+			iface->drawString("-----------------------------------------------------------------------------\n");
 			iface->drawTable(res[i].second);
+			//do {
+				iface->drawString("\n\nThis is the book that you want?\na. Yes\nb. No\n");
+				iface->drawString("   > ");
+				iface->readChar(cmd);
+				if (cmd == 'a'){
+					score += 5;
+					break;
+				}
+				else if (cmd == 'b')
+					score -= 1;
+			//} while (cmd != 'a' && cmd != 'b');
 		}
+		iface->drawString("\n\nYour score: " + to_string(score));
 		iface->getInput();
-	//}
+		return;
+	}
 }
 
 void Application::saveBooks(){
@@ -200,8 +215,6 @@ int Application::numApproximateStringMatching(string bookName, string toSearch, 
 	int num = 0;
 
 	int min = 20;
-	string minStr;
-	string minSearchStr;
 
 	stringstream s1(bookName);
 	while (!s1.eof()) {
@@ -210,11 +223,8 @@ int Application::numApproximateStringMatching(string bookName, string toSearch, 
 		num = editDistance(toSearch, word1);
 		if (num < min){
 			min = num;
-			minStr = word1;
-			minSearchStr = toSearch;
 		}
 	}
-	//cout << "\t" << minStr << "\t" << minSearchStr << "\t" << min << "\n";
 	return min;
 }
 
@@ -252,10 +262,10 @@ vector<pair<int,Book>> Application::calculateGuess(vector<vector<string>> &combi
 	//	numOptions++;
 	//}
 	res.erase(res.begin() + numOptions, res.end());
-	for (int i = 0; i < res.size(); i++)
-	{
-		cout << res[i].first << "\t" << res[i].second.getName() << endl;
-	}
+	//for (int i = 0; i < res.size(); i++)
+	//{
+	//	cout << res[i].first << "\t" << res[i].second.getName() << endl;
+	//}
 	return res;
 }
 
