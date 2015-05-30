@@ -246,7 +246,7 @@ vector<pair<int,Book>> Application::calculateGuess(vector<vector<string>> &combi
 			{
 				numWords = 0;
 				total += numApproximateStringMatching(books[i].getName(), combinations[j][k], numWords);
-				if (numWords < combinations[j].size() - 1)
+				if (numWords < combinations[0].size() - 1)
 					total += 100;
 			}
 			if (total < min)
