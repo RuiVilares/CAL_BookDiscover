@@ -238,22 +238,21 @@ vector<pair<int,Book>> Application::calculateGuess(vector<vector<string>> &combi
 	int min;
 	int numWords;
 	for (int i = 0; i < books.size(); i++){
+		min = INT_MAX;
 		for (size_t j = 0; j < combinations.size(); j++)
 		{
 			total = 0;
-			min = 200;
 			for (size_t k = 0; k < combinations[j].size(); k++)
 			{
 				numWords = 0;
 				total += numApproximateStringMatching(books[i].getName(), combinations[j][k], numWords);
-				if (numWords < combinations[0].size() - 1)
+				if (numWords < combinations[j].size() - 1)
 					total += 100;
 			}
 			if (total < min)
 				min = total;
 		}
 		res.push_back(pair<int,Book>(min, books[i]));
-		total = 0;
 	}
 	sort(res.begin(), res.end(), pairCompare);
 	int numOptions = 3;
