@@ -108,10 +108,11 @@ void Application::showBooks(){
 }
 
 void Application::play(){
-	while (1){
+	int score = 0;
+	int round = 1;
+	while (round <= 5){
 		TopMenu("PLAY");
 		string line, word;
-		int score = 0;
 		char cmd;
 		iface->drawString("Entering words base (singular, male, infinitive) separated by commas.\nA clue may include, at most, a word missing in the book's title.\n\n");
 		iface->drawString("Clue: ");
@@ -128,22 +129,22 @@ void Application::play(){
 			iface->drawHeader("Title", "Author", "Year");
 			iface->drawString("-----------------------------------------------------------------------------\n");
 			iface->drawTable(res[i].second);
-			//do {
-				iface->drawString("\n\nThis is the book that you want?\na. Yes\nb. No\n");
-				iface->drawString("   > ");
-				iface->readChar(cmd);
-				if (cmd == 'a'){
-					score += 5;
-					break;
-				}
-				else if (cmd == 'b')
-					score -= 1;
-			//} while (cmd != 'a' && cmd != 'b');
+			iface->drawString("\n\nThis is the book that you want?\na. Yes\nb. No\n");
+			iface->drawString("   > ");
+			iface->readChar(cmd);
+			if (cmd == 'a'){
+				score += 5;
+				break;
+			}
+			else if (cmd == 'b')
+				score -= 1;
 		}
-		iface->drawString("\n\nYour score: " + to_string(score));
-		iface->getInput();
-		return;
+		round++;
 	}
+	iface->drawString("\n\nYour score: " + to_string(score));
+	iface->getInput();
+	return;
+
 }
 
 void Application::saveBooks(){
