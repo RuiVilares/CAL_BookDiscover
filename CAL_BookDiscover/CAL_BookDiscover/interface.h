@@ -75,7 +75,7 @@ public:
 	*/
 	void cleanScr();
 	/** Prints formated information of a book
-	*@param Book book to print
+	*@param book book to print
 	*/
 	void drawTable(Book book);
 	/** Prints formated header for the book table

@@ -44,3 +44,4 @@ public:
 	*/
 	bool operator<(Book& book2);
 };
+/** @} */
