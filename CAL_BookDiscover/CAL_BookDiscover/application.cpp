@@ -114,8 +114,10 @@ void Application::play(){
 		TopMenu("PLAY");
 		string line, word;
 		char cmd;
-		iface->drawString("Entering words base (singular, male, infinitive) separated by commas.\nA clue may include, at most, a word missing in the book's title.\n\n");
-		iface->drawString("Clue: ");
+		iface->drawString("Entering words base (singular, male, infinitive) separated by commas.\nA clue may include, at most, a word missing in the book's title.\nYou have 5 rounds\n\n");
+		iface->drawString("Round: " + to_string(round));
+		iface->drawString("\nScore: " + to_string(score));
+		iface->drawString("\n\nClue: ");
 		iface->readLine(line);
 		vector<string> guesses;
 		stringstream s1(line);
@@ -124,21 +126,32 @@ void Application::play(){
 			guesses.push_back(word);
 		}
 		vector<pair<int, Book>> res = calculateGuess(calCombinations(guesses));
-		for (unsigned int i = 0; i < res.size(); i++){
+		unsigned int i = 0;
+		for (i; i < res.size(); i++){
 			iface->drawString("\n\n");
 			iface->drawHeader("Title", "Author", "Year");
 			iface->drawString("-----------------------------------------------------------------------------\n");
 			iface->drawTable(res[i].second);
-			iface->drawString("\n\nThis is the book that you want?\na. Yes\nb. No\n");
-			iface->drawString("   > ");
-			iface->readChar(cmd);
-			if (cmd == 'a'){
-				score += 5;
-				break;
+			while (1){
+				iface->drawString("\n\nThis is the book that you want?\na. Yes\nb. No\n");
+				iface->drawString("   > ");
+				iface->readChar(cmd);
+				if (cmd == 'a'){
+					score += 5;
+					break;
+				}
+				else if (cmd == 'b'){
+					score -= 1;
+					break;
+				}
 			}
-			else if (cmd == 'b')
-				score -= 1;
+			if (cmd == 'a')
+				break;
 		}
+		if (i < res.size())
+			iface->drawString("\n\nBook found");
+		else
+			iface->drawString("\n\n\nGive up");
 		round++;
 	}
 	iface->drawString("\n\nYour score: " + to_string(score));
@@ -256,16 +269,8 @@ vector<pair<int,Book>> Application::calculateGuess(vector<vector<string>> &combi
 		res.push_back(pair<int,Book>(min, books[i]));
 	}
 	sort(res.begin(), res.end(), pairCompare);
-	int numOptions = 3;
-	//while (res[numOptions].first == res[numOptions + 1].first - 1 && numOptions <= res.size() - 1);
-	//{
-	//	numOptions++;
-	//}
+	int numOptions = 5;
 	res.erase(res.begin() + numOptions, res.end());
-	//for (int i = 0; i < res.size(); i++)
-	//{
-	//	cout << res[i].first << "\t" << res[i].second.getName() << endl;
-	//}
 	return res;
 }
 
