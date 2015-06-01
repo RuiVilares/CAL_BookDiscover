@@ -114,7 +114,7 @@ void Application::play(){
 		TopMenu("PLAY");
 		string line, word;
 		char cmd;
-		iface->drawString("Entering words base (singular, male, infinitive) separated by commas.\nA clue may include, at most, a word missing in the book's title.\nYou have 5 rounds\n\n");
+		iface->drawString("Entering words base (singular, male, infinitive) separated by spaces.\nA clue may include, at most, a word missing in the book's title.\nYou have 5 rounds\n\n");
 		iface->drawString("Round: " + to_string(round));
 		iface->drawString("\nScore: " + to_string(score));
 		iface->drawString("\n\nClue: ");
